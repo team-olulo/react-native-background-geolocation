@@ -1,7 +1,7 @@
-[submodule "ios"]
-	path = ios/common
-	url = https://github.com/mauron85/background-geolocation-ios.git
-[submodule "android"]
-	path = android/common
-	url = https://github.com/team-olulo/background-geolocation-android.git
-	branch = sdk31
+#[submodule "ios"]
+	#path = ios/common
+	#url = https://github.com/mauron85/background-geolocation-ios.git
+#[submodule "android"]
+#	path = android/common
+#	url = https://github.com/team-olulo/background-geolocation-android.git
+#	branch = sdk31
