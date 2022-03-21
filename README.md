@@ -9,6 +9,10 @@
 ```
 yarn add @darron1217/react-native-background-geolocation
 ```
+package.json
+```
+"@darron1217/react-native-background-geolocation": "team-olulo/react-native-background-geolocation#sdk31"
+```
 
 ### Automatic setup
 
