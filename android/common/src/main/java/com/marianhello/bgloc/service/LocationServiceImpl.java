@@ -9,6 +9,7 @@ This is a new class
 
 package com.marianhello.bgloc.service;
 
+import android.Manifest;
 import android.accounts.Account;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -18,6 +19,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
@@ -31,6 +34,7 @@ import android.os.Message;
 import android.os.Process;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import androidx.core.content.ContextCompat;
 
 import com.marianhello.bgloc.Config;
 import com.marianhello.bgloc.ConnectivityListener;
@@ -402,6 +406,25 @@ public class LocationServiceImpl extends Service implements ProviderDelegate, Lo
     @Override
     public void startForeground() {
         if (sIsRunning && !mIsInForeground) {
+            String[] permissions = {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            };
+
+            boolean isAllowService = false;
+            for (String permission : permissions) {
+                int result = ContextCompat.checkSelfPermission(this, permission);
+                if (result == PackageManager.PERMISSION_GRANTED) {
+                    isAllowService = true;
+                    break;
+                }
+            }
+
+            if (!isAllowService) {
+                stop();
+                return;
+            }
+
             Config config = getConfig();
             Notification notification = new NotificationHelper.NotificationFactory(this).getNotification(
                     config.getNotificationTitle(),
@@ -414,7 +437,12 @@ public class LocationServiceImpl extends Service implements ProviderDelegate, Lo
                 mProvider.onCommand(LocationProvider.CMD_SWITCH_MODE,
                         LocationProvider.FOREGROUND_MODE);
             }
-            super.startForeground(NOTIFICATION_ID, notification);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                super.startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+            } else {
+                super.startForeground(NOTIFICATION_ID, notification);
+            }
             mIsInForeground = true;
         }
     }
